@@ -3,25 +3,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Menú CRUD de Productos</title>
+  <title>Menú Graficos </title>
   <link rel="stylesheet" type="text/css" href="menustyle.css">
  
 </head>
 <body>
 <header>
   <h1>📊 Sistema Tienda Online</h1>
-  <p>Gestión de productos</p>
+  <p>Analisis por Graficas</p>
 </header>
   <nav>
-    <a href="formulario_producto.html">➕ Agregar Producto</a>
-    <a href="mostrar_productos.php">📋 Ver Productos</a>
-    <a href="editar_producto.php">✏️ Editar Producto</a>
-    <a href="formulario_producto_borrar.html">🗑️ Eliminar Producto</a>
+    <a href="graf_analiticas_ventas.php">➕Gráficos de productos-clientes </a>
+    <a href="listar_ventas.php">📋 Ver ventas</a>
+    <a href="mostrar_ventas.php">✏️ Editar venta</a>
+    <a href="mostrar_ventas.php">🗑️ Eliminar venta</a>
     
   </nav>
   
 <main>
-  <h2>Menú CRUD - Productos</h2>
+  <h2>Menú Analisis - Graficas</h2>
   <p>Selecciona una opción del menú para comenzar.</p>
 </main>
 

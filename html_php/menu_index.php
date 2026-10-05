@@ -3,55 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Menú Principal - Tienda Online</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f6f9;
-    }
-
-    header {
-      background: #2c3e50;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-
-    nav {
-      background: #34495e;
-      display: flex;
-      justify-content: center;
-      padding: 10px 0;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 15px;
-      padding: 10px 20px;
-      transition: background 0.3s;
-    }
-
-    nav a:hover {
-      background: #1abc9c;
-      border-radius: 5px;
-    }
-
-    main {
-      padding: 30px;
-      text-align: center;
-    }
-
-    footer {
-      background: #2c3e50;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="menustyle.css">
+  
 </head>
 <body>
 
@@ -65,7 +18,7 @@
   <a href="menu_crud_clientes.html">👥 Clientes</a>
   <a href="menu_crud_ventas.html">🛒 Ventas</a>
   <a href="analiticas_ventas.php">📈 Analíticas</a>
-  <a href="graficos.php">📊 Gráficos</a>
+  <a href="menu_graficos.php">📊 Gráficos</a>
 </nav>
 
 <main>
@@ -74,7 +27,7 @@
 </main>
 
 <footer>
-  &copy; 2025 Tienda Online - Proyecto Académico
+  &copy; 2026 Tienda Online - Proyecto Académico
 </footer>
 
 </body>
