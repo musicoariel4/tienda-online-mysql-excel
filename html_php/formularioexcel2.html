@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar varios clientes</title>
+</head>
+<body>
+
+<h2>Registrar clientes</h2>
+
+<!-- Formulario para capturar UNO y agregarlo a la tabla -->
+<label>ID:</label>
+<input type="number" id="id">
+<label>Nombre:</label>
+<input type="text" id="nombre">
+<label>Email:</label>
+<input type="email" id="email">
+<button type="button" onclick="agregarCliente()">Agregar cliente</button>
+
+<hr>
+
+<!-- Tabla donde se acumulans los clientes cargados -->
+<form action="exportar_excel2.php" method="post" id="formExport">
+<table border="1" id="tablaClientes">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aquí se van añadiendo filas -->
+    </tbody>
+</table>
+<br>
+<button type="submit">Exportar Todos a Excel</button>
+</form>
+
+<script>
+// Añade el registro capturado en el formulario a la tabla visual
+function agregarCliente(){
+    let id     = document.getElementById("id").value;
+    let nombre = document.getElementById("nombre").value;
+    let email  = document.getElementById("email").value;
+
+    if(id==="" || nombre==="" || email===""){
+        alert("Por favor complete todos los campos.");
+        return;
+    }
+
+    // Insertar fila
+    let tbody = document.querySelector("#tablaClientes tbody");
+    let fila  = document.createElement("tr");
+
+    fila.innerHTML=`
+        <td><input type="hidden" name="id[]" value="${id}">${id}</td>
+        <td><input type="hidden" name="nombre[]" value="${nombre}">${nombre}</td>
+        <td><input type="hidden" name="email[]" value="${email}">${email}</td>
+    `;
+    tbody.appendChild(fila);
+
+    // Limpiar campos
+    document.getElementById("id").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("email").value = "";
+}
+</script>
+
+</body>
+</html>
