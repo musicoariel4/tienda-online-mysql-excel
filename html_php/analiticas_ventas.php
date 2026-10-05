@@ -89,8 +89,7 @@ $promedio_venta = $conexion->query("
       bottom: 0;
       width: 100%;
     }
-  </style>
-  </style>
+    </style>
 </head>
 <body>
 <header>

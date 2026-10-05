@@ -14,7 +14,7 @@
 </header>
   <nav>
     <a href="graf_analiticas_ventas.php">➕Gráficos de productos-clientes </a>
-    <a href="listar_ventas.php">📋 Ver ventas</a>
+    <a href="histograma_productos.php">📊 Histograma de productos</a>
     <a href="mostrar_ventas.php">✏️ Editar venta</a>
     <a href="mostrar_ventas.php">🗑️ Eliminar venta</a>
     

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 
--- Tiempo de generación: 04-10-2026 a las 17:12:10
+-- Tiempo de generación: 05-10-2026 a las 18:05:41
 -- Versión del servidor: 10.4.11-MariaDB
 -- Versión de PHP: 7.4.2
 
@@ -505,6 +505,39 @@ INSERT INTO `pedidos` (`id`, `cliente_id`, `fecha`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `precio`
+--
+
+CREATE TABLE `precio` (
+  `producto_id` int(11) NOT NULL,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date DEFAULT NULL,
+  `precio` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `precio`
+--
+
+INSERT INTO `precio` (`producto_id`, `fecha_inicio`, `fecha_fin`, `precio`) VALUES
+(6, '2025-03-16', NULL, '2000.00'),
+(7, '2025-03-10', NULL, '35000.00'),
+(8, '2025-03-12', NULL, '45.00'),
+(10, '2025-08-15', NULL, '1000.00'),
+(12, '2025-01-10', NULL, '850000.00'),
+(13, '2025-01-12', NULL, '600000.00'),
+(14, '2025-01-15', NULL, '280000.00'),
+(15, '2025-01-18', NULL, '220000.00'),
+(16, '2025-01-20', NULL, '200000.00'),
+(17, '2025-01-22', NULL, '250000.00'),
+(18, '2025-01-25', NULL, '1900000.00'),
+(19, '2025-01-27', NULL, '180000.00'),
+(20, '2025-01-30', NULL, '700000.00'),
+(21, '2025-02-02', NULL, '10000.00');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `productos`
 --
 
@@ -612,6 +645,12 @@ ALTER TABLE `pedidos`
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
+-- Indices de la tabla `precio`
+--
+ALTER TABLE `precio`
+  ADD PRIMARY KEY (`producto_id`,`fecha_inicio`);
+
+--
 -- Indices de la tabla `productos`
 --
 ALTER TABLE `productos`
@@ -674,6 +713,12 @@ ALTER TABLE `detalle_pedido`
 --
 ALTER TABLE `pedidos`
   ADD CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`);
+
+--
+-- Filtros para la tabla `precio`
+--
+ALTER TABLE `precio`
+  ADD CONSTRAINT `precio_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
 
 --
 -- Filtros para la tabla `productos`

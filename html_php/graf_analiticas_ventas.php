@@ -154,7 +154,6 @@ $conexion->close();
       document.getElementById("graficoProductos"),
       {
         type: 'bar',
-
         data: {
           labels: productos,
 

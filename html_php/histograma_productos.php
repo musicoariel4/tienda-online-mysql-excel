@@ -5,11 +5,9 @@ if ($conexion->connect_error) {
 }
 
 // Consulta: Total de unidades vendidas por producto
-$sql = "SELECT p.nombre AS producto, SUM(v.cantidad) AS total_vendido
-        FROM ventas v
-        JOIN productos p ON v.producto_id = p.id
-        GROUP BY p.id
-        ORDER BY total_vendido DESC";
+$sql = "SELECT producto AS producto, SUM(total) AS total_vendido
+        FROM vista_ventas 
+        GROUP BY producto";
 
 $resultado = $conexion->query($sql);
 
@@ -29,17 +27,45 @@ $conexion->close();
 <head>
   <meta charset="UTF-8">
   <title>Histograma de Ventas por Producto</title>
+    <link rel="stylesheet" type="text/css" href="menustyle.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    canvas { max-width: 800px; margin: auto; display: block; }
+     body {
+      font-family: Arial, sans-serif;
+      padding: 25px;
+    }
+
+    .metric {
+      margin: 5px 0;
+    }
+
+    /* Gráfico de productos */
+    .grafico-productos {
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
+      margin: auto;
+    }
+
+    /* Gráfico de clientes */
+    .grafico-clientes {
+      width: 400px;
+      height: 280px;
+      margin: auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
   </style>
 </head>
 <body>
 
-  <h2>📊 Histograma: Cantidad de Ventas por Producto</h2>
+  <h2>📊 Histograma: Ingresos por Producto</h2>
+   <div class="grafico-productos">
   <canvas id="histogramaProductos"></canvas>
-
+   </div>
   <script>
     const productos = <?= json_encode($productos) ?>;
     const cantidades = <?= json_encode($ventas) ?>;
@@ -63,7 +89,7 @@ $conexion->close();
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Cantidad Vendida'
+              text: 'Total de ventas'
             }
           },
           x: {
@@ -76,7 +102,7 @@ $conexion->close();
         plugins: {
           title: {
             display: true,
-            text: 'Total de Unidades Vendidas por Producto'
+            text: 'Total de Ingresos por Producto'
           },
           legend: {
             display: false
@@ -86,5 +112,11 @@ $conexion->close();
     });
   </script>
 
+<footer>
+  &copy; 2026 Tienda Online - Proyecto Académico
+</footer>
+
+ 
+  <p style="text-align:center;"><a href="menu_graficos.php">⬅ Volver al Menú</a></p>
 </body>
 </html>

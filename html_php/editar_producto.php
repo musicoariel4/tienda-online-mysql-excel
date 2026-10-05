@@ -9,9 +9,27 @@ if ($conexion->connect_error) {
 $id_producto = isset($_POST['id_producto']) ? (int)$_POST['id_producto'] : 0;
 $producto = null;
 
-// Si hay un ID seleccionado, buscamos sus datos
+// Si hay un ID seleccionado, buscamos sus datos y su precio vigente más reciente
 if ($id_producto > 0) {
-    $stmt = $conexion->prepare("SELECT * FROM productos WHERE id = ?");
+    $sql = "SELECT 
+                p.id, 
+                p.nombre, 
+                p.descripcion, 
+                p.fecha_ingreso, 
+                p.stock, 
+                p.disponible,
+                pr.precio AS precio_actual
+            FROM productos p
+            LEFT JOIN precio pr ON p.id = pr.producto_id
+               AND pr.fecha_inicio = (
+                   SELECT MAX(pr2.fecha_inicio)
+                   FROM precio pr2
+                   WHERE pr2.producto_id = p.id
+                     AND pr2.fecha_inicio <= CURDATE()
+               )
+            WHERE p.id = ?";
+            
+    $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id_producto);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -19,14 +37,15 @@ if ($id_producto > 0) {
     $stmt->close();
 }
 
-// Consulta para listar productos
-$resultado = $conexion->query("SELECT id, nombre FROM productos");
+// Consulta para listar productos en el desplegable
+$resultado = $conexion->query("SELECT id, nombre FROM productos ORDER BY nombre ASC");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Editar Producto</title>
-  <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
 </head>
 <body>
  <div class="container">
@@ -40,13 +59,13 @@ $resultado = $conexion->query("SELECT id, nombre FROM productos");
                     <?= htmlspecialchars($row['nombre']) ?> (ID: <?= $row['id'] ?>)
                 </option>
             <?php endwhile; ?>
-        </select>
-      <!--  <button type="submit">Cargar Datos</button> -->
-         <input type="submit" value="Cargar Datos">
+        </select><br><br>
+        <input type="submit" value="Cargar Datos">
     </form>
 
     <?php if ($producto): ?>
-        <h2>Editar Datos del Producto</h2>
+        <hr>
+        <h2>Editar Datos del Producto #<?= $producto['id'] ?></h2>
         <form method="post" action="update_producto.php">
             <input type="hidden" name="id" value="<?= $producto['id'] ?>">
 
@@ -57,7 +76,10 @@ $resultado = $conexion->query("SELECT id, nombre FROM productos");
             <textarea name="descripcion" required><?= htmlspecialchars($producto['descripcion']) ?></textarea><br><br>
 
             <label>Precio:</label><br>
-            <input type="number" step="0.01" name="precio" value="<?= $producto['precio'] ?>" required><br><br>
+            <input type="number" step="0.01" min="0" name="precio" value="<?= $producto['precio_actual'] ?? 0 ?>" required><br><br>
+
+            <label>Stock:</label><br>
+            <input type="number" min="0" name="stock" value="<?= $producto['stock'] ?>" required><br><br>
 
             <label>Fecha de Ingreso:</label><br>
             <input type="date" name="fecha_ingreso" value="<?= $producto['fecha_ingreso'] ?>" required><br><br>
@@ -68,8 +90,7 @@ $resultado = $conexion->query("SELECT id, nombre FROM productos");
                 <option value="0" <?= (!$producto['disponible']) ? 'selected' : '' ?>>No</option>
             </select><br><br>
 
-      <!--      <button type="submit">Actualizar Producto</button> -->
-             <input type="submit" value="Actualizar Producto">
+            <input type="submit" value="Actualizar Producto">
         </form>
     <?php endif; ?>
  </div>

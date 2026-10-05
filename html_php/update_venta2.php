@@ -4,93 +4,104 @@ if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
 }
 
-$id = (int)$_POST['id'];
-$cliente_id = (int)$_POST['cliente_id'];
-$producto_id = (int)$_POST['producto_id'];
-$cantidad_nueva = (int)$_POST['cantidad'];
-//$total = (float)$_POST['total'];
-echo "ID de la venta: $id<br>";
-echo "ID del cliente: $cliente_id<br>";
-echo "ID del producto: $producto_id<br>";
-echo "Cantidad nueva: $cantidad_nueva<br>";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $pedido_id           = $_POST['id'];
+    $cliente_id          = $_POST['cliente_id'];
+    $producto_id         = $_POST['producto_id'];
+    $producto_id_antiguo = $_POST['producto_id_antiguo'];
+    $cantidad            = (int)$_POST['cantidad'];
+    $cantidad_antigua    = (int)$_POST['cantidad_antigua'];
+    $fecha               = $_POST['fecha'];
 
-// 1. Obtener datos de la venta actual
-$sql = "SELECT producto_id, cantidad FROM detalle_pedido WHERE pedido_id = ?";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$venta_anterior = $resultado->fetch_assoc();
-$stmt->close();
+    // 1. Validar que exista precio para el producto seleccionado a la fecha indicada
+    $sqlPrecio = "SELECT precio 
+                  FROM precio 
+                  WHERE producto_id = ? 
+                    AND fecha_inicio <= ? 
+                  ORDER BY fecha_inicio DESC 
+                  LIMIT 1";
+    $stmtPrecio = $conexion->prepare($sqlPrecio);
+    $stmtPrecio->bind_param("is", $producto_id, $fecha);
+    $stmtPrecio->execute();
+    $resPrecio = $stmtPrecio->get_result();
 
-if (!$venta_anterior) {
-    die("❌ Error: Venta no encontrada.");
-}
+    if (!$resPrecio->fetch_assoc()) {
+        die("❌ Error: No existe un precio registrado para este producto en la fecha seleccionada ($fecha).");
+    }
+    $stmtPrecio->close();
 
-$producto_anterior = (int)$venta_anterior['producto_id'];
-$cantidad_anterior = (int)$venta_anterior['cantidad'];
+    // 2. Gestionar control de Stock
+    if ($producto_id == $producto_id_antiguo) {
+        // Mismo producto: Devolver stock anterior y calcular diferencia
+        $stmtStock = $conexion->prepare("SELECT stock FROM productos WHERE id = ?");
+        $stmtStock->bind_param("i", $producto_id);
+        $stmtStock->execute();
+        $stockActual = $stmtStock->get_result()->fetch_assoc()['stock'];
+        $stmtStock->close();
 
-// 2. Ajustar stock
-if ($producto_id === $producto_anterior) {
-    // Caso: mismo producto
-    $diferencia = $cantidad_nueva - $cantidad_anterior;
+        $stockDisponible = $stockActual + $cantidad_antigua;
 
-    if ($diferencia > 0) {
-        // Validar stock disponible
-        $check = $conexion->query("SELECT stock FROM productos WHERE id = $producto_id");
-        $row = $check->fetch_assoc();
-        if ($row['stock'] < $diferencia) {
-            die("❌ No hay stock suficiente. Disponible: {$row['stock']} unidades.");
+        if ($cantidad > $stockDisponible) {
+            die("❌ Error: La nueva cantidad ($cantidad) supera el stock disponible ($stockDisponible).");
         }
-        $conexion->query("UPDATE productos SET stock = stock - $diferencia WHERE id = $producto_id");
-    } elseif ($diferencia < 0) {
-        $conexion->query("UPDATE productos SET stock = stock + " . abs($diferencia) . " WHERE id = $producto_id");
+
+        // Nuevo stock
+        $nuevoStock = $stockDisponible - $cantidad;
+        $stmtUpStock = $conexion->prepare("UPDATE productos SET stock = ? WHERE id = ?");
+        $stmtUpStock->bind_param("ii", $nuevoStock, $producto_id);
+        $stmtUpStock->execute();
+        $stmtUpStock->close();
+
+    } else {
+        // Producto diferente: Devolver stock al producto antiguo y verificar stock en el nuevo producto
+        
+        // Devolver al producto antiguo
+        $stmtDev = $conexion->prepare("UPDATE productos SET stock = stock + ? WHERE id = ?");
+        $stmtDev->bind_param("ii", $cantidad_antigua, $producto_id_antiguo);
+        $stmtDev->execute();
+        $stmtDev->close();
+
+        // Verificar stock en el nuevo producto
+        $stmtStock = $conexion->prepare("SELECT stock FROM productos WHERE id = ?");
+        $stmtStock->bind_param("i", $producto_id);
+        $stmtStock->execute();
+        $stockNuevoProd = $stmtStock->get_result()->fetch_assoc()['stock'];
+        $stmtStock->close();
+
+        if ($cantidad > $stockNuevoProd) {
+            die("❌ Error: No hay stock suficiente para el nuevo producto seleccionado.");
+        }
+
+        // Restar del nuevo producto
+        $nuevoStock = $stockNuevoProd - $cantidad;
+        $stmtRest = $conexion->prepare("UPDATE productos SET stock = ? WHERE id = ?");
+        $stmtRest->bind_param("ii", $nuevoStock, $producto_id);
+        $stmtRest->execute();
+        $stmtRest->close();
     }
 
-} else {
-    // Caso: cambió de producto
-    // Restaurar stock al anterior
-    $conexion->query("UPDATE productos SET stock = stock + $cantidad_anterior WHERE id = $producto_anterior");
+    // 3. Actualizar la tabla 'pedidos'
+    $stmtPedido = $conexion->prepare("UPDATE pedidos SET cliente_id = ?, fecha = ? WHERE id = ?");
+    $stmtPedido->bind_param("isi", $cliente_id, $fecha, $pedido_id);
+    $stmtPedido->execute();
+    $stmtPedido->close();
 
-    // Validar stock del nuevo
-    $check = $conexion->query("SELECT stock FROM productos WHERE id = $producto_id");
-    $row = $check->fetch_assoc();
-    if ($row['stock'] < $cantidad_nueva) {
-        die("❌ No hay stock suficiente en el nuevo producto. Disponible: {$row['stock']} unidades.");
+    // 4. Actualizar la tabla 'detalle_pedido'
+    $stmtDetalle = $conexion->prepare("UPDATE detalle_pedido SET producto_id = ?, cantidad = ? WHERE pedido_id = ?");
+    $stmtDetalle->bind_param("iii", $producto_id, $cantidad, $pedido_id);
+
+    if ($stmtDetalle->execute()) {
+        echo "<p style='color:green;'>✅ Venta #$pedido_id actualizada correctamente.</p>";
+        echo "<p><a href='mostrar_ventas.php'>⬅ Volver al listado de ventas</a></p>";
+    } else {
+        echo "<p style='color:red;'>❌ Error al actualizar la venta: " . $stmtDetalle->error . "</p>";
     }
-    // Restar al nuevo
-    $conexion->query("UPDATE productos SET stock = stock - $cantidad_nueva WHERE id = $producto_id");
-}
 
-$sql = "SELECT precio FROM productos WHERE id = ?";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $producto_id);
-$stmt->execute();
-$resultado = $stmt->get_result();
+    $stmtDetalle->close();
 
-if ($fila = $resultado->fetch_assoc()) {
-    $precioProducto = $fila['precio']; // ← aquí se guarda el precio
-    echo "El precio del producto es: $" . $precioProducto*$_POST['cantidad'];
 } else {
-    echo "Producto no encontrado.";
-}
-    $total = $precioProducto*$_POST['cantidad'];
-
-// 3. Actualizar la venta
-$stmt_update = $conexion->prepare("UPDATE detalle_pedido SET producto_id = ?, cantidad = ? WHERE pedido_id  = ?");
-$stmt_update->bind_param("iii", $producto_id, $cantidad_nueva, $id);    
-
-
-
-if ($stmt_update->execute()) {
-    echo "✅ Venta actualizada y stock ajustado correctamente.";
-} else {
-    echo "❌ Error al actualizar la venta: " . $conexion->error;
+    echo "<p>No se recibieron datos por POST.</p>";
 }
 
-$stmt_update->close();
 $conexion->close();
 ?>
-
-<br><br>
-<a href="mostrar_ventas.php">⬅️ Volver al listado de ventas</a>
