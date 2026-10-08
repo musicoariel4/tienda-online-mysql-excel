@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 
--- Tiempo de generación: 05-10-2026 a las 18:05:41
+-- Tiempo de generación: 08-10-2026 a las 02:45:07
 -- Versión del servidor: 10.4.11-MariaDB
 -- Versión de PHP: 7.4.2
 
@@ -372,7 +372,10 @@ INSERT INTO `detalle_pedido` (`id`, `pedido_id`, `producto_id`, `cantidad`) VALU
 (310, 106, 18, 2),
 (312, 108, 20, 2),
 (313, 109, 6, 2),
-(314, 110, 17, 2);
+(314, 110, 17, 2),
+(316, 112, 18, 1),
+(317, 113, 6, 1),
+(318, 114, 6, 3);
 
 -- --------------------------------------------------------
 
@@ -500,7 +503,11 @@ INSERT INTO `pedidos` (`id`, `cliente_id`, `fecha`) VALUES
 (107, 1, '2026-09-09'),
 (108, 4, '2026-10-04'),
 (109, 2, '2026-10-04'),
-(110, 4, '2026-10-04');
+(110, 4, '2026-10-04'),
+(111, 4, '2026-10-05'),
+(112, 1, '2026-10-05'),
+(113, 1, '2026-10-05'),
+(114, 1, '2026-10-06');
 
 -- --------------------------------------------------------
 
@@ -520,11 +527,13 @@ CREATE TABLE `precio` (
 --
 
 INSERT INTO `precio` (`producto_id`, `fecha_inicio`, `fecha_fin`, `precio`) VALUES
-(6, '2025-03-16', NULL, '2000.00'),
+(6, '2025-03-16', '2026-10-05', '2000.00'),
+(6, '2026-10-05', NULL, '2500000.00'),
 (7, '2025-03-10', NULL, '35000.00'),
 (8, '2025-03-12', NULL, '45.00'),
 (10, '2025-08-15', NULL, '1000.00'),
 (12, '2025-01-10', NULL, '850000.00'),
+(12, '2026-10-05', NULL, '850000.00'),
 (13, '2025-01-12', NULL, '600000.00'),
 (14, '2025-01-15', NULL, '280000.00'),
 (15, '2025-01-18', NULL, '220000.00'),
@@ -533,7 +542,10 @@ INSERT INTO `precio` (`producto_id`, `fecha_inicio`, `fecha_fin`, `precio`) VALU
 (18, '2025-01-25', NULL, '1900000.00'),
 (19, '2025-01-27', NULL, '180000.00'),
 (20, '2025-01-30', NULL, '700000.00'),
-(21, '2025-02-02', NULL, '10000.00');
+(21, '2025-02-02', NULL, '10000.00'),
+(21, '2026-10-05', NULL, '10000.00'),
+(22, '2026-10-05', NULL, '77000.00'),
+(23, '2026-10-05', NULL, '90000.00');
 
 -- --------------------------------------------------------
 
@@ -557,20 +569,22 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `precio`, `fecha_ingreso`, `disponible`, `stock`, `proveedor_id`) VALUES
-(6, 'Laptop', 'Laptop con procesador i7 y 16 GB de RAM', '2000.00', '2025-03-16', 0, 12, 1),
+(6, 'Laptop', 'Laptop con procesador i7 y 16 GB de RAM', '2000.00', '2025-03-16', 0, 8, 1),
 (7, 'Mouse', 'Mouse inalámbrico con sensor óptico', '35000.00', '2025-03-10', 1, 6, 1),
 (8, 'Teclado', 'Teclado mecánico retroiluminado', '45.00', '2025-03-12', 0, 9, 1),
 (10, 'teclado 12', 'teclado para juegos', '1000.00', '2025-08-15', 1, 5, 3),
-(12, 'Procesador Intel i5-12400F', 'CPU de 6 núcleos, 12 hilos, 2.5 GHz', '850000.00', '2025-01-10', 1, 15, 1),
+(12, 'Procesador Intel i5-12400F', 'CPU de 6 núcleos, 12 hilos, 2.5 GHz', '850000.00', '2025-01-10', 1, 16, 1),
 (13, 'Tarjeta Madre ASUS B560M', 'Motherboard micro-ATX compatible con Intel 10/11 gen', '600000.00', '2025-01-12', 1, 10, 3),
 (14, 'Memoria RAM Corsair 16GB DDR4', 'Módulo RAM DDR4 3200MHz', '280000.00', '2025-01-15', 1, 25, 1),
 (15, 'Disco SSD Kingston 480GB', 'Unidad SSD SATA III de 480GB', '220000.00', '2025-01-18', 1, 30, 3),
 (16, 'Disco Duro Seagate 1TB', 'HDD 7200rpm de 1TB', '200000.00', '2025-01-20', 1, 20, 1),
 (17, 'Fuente de Poder EVGA 600W', 'Fuente certificada 80+ White', '250000.00', '2025-01-22', 1, 16, 3),
-(18, 'Tarjeta Gráfica NVIDIA RTX 3060', 'GPU de 12GB GDDR6', '1900000.00', '2025-01-25', 1, 4, 1),
+(18, 'Tarjeta Gráfica NVIDIA RTX 3060', 'GPU de 12GB GDDR6', '1900000.00', '2025-01-25', 1, 3, 1),
 (19, 'Gabinete Gamer Cougar MX330', 'Torre ATX con ventilación optimizada', '180000.00', '2025-01-27', 1, 12, 3),
 (20, 'Monitor LG 24” Full HD', 'Pantalla IPS con resolución 1920x1080', '700000.00', '2025-01-30', 1, 9, 1),
-(21, 'Teclado Mecánico Redragon Kumara', 'Teclado mecánico retroiluminado RGB', '10000.00', '2025-02-02', 1, 23, 3);
+(21, 'Teclado Mecánico Redragon Kumara', 'Teclado mecánico retroiluminado RGB', '10000.00', '2025-02-02', 1, 40, 3),
+(22, 'LogitecH Mk235 teclado Y Mouse Inalámbricos ', 'Color del mouse: Negro.\r\nConexión inalámbrica a través de tecnología 2.4ghz con alcance de hasta 10 metros.\r\nTeclado con 105 teclas y 12 programables para mayor funcionalidad.\r\nSensor óptico de 1000 dpi para un control preciso del cursor.\r\nArquitectura de', '0.00', '2026-10-05', 1, NULL, NULL),
+(23, 'Logitech, Receptor Usb Logi Bolt, Mouse Teclado Inalámbricos Negro', '', '0.00', '2026-10-05', 1, 20, NULL);
 
 -- --------------------------------------------------------
 
@@ -597,6 +611,22 @@ INSERT INTO `proveedores` (`id`, `nombre`, `contacto`, `telefono`, `email`) VALU
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `vista_pedidos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `vista_pedidos` (
+`pedido` int(11)
+,`fecha` date
+,`cliente` varchar(100)
+,`producto` varchar(100)
+,`cantidad` int(11)
+,`precio` decimal(10,2)
+,`total` decimal(20,2)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `vista_ventas`
 -- (Véase abajo para la vista actual)
 --
@@ -613,11 +643,20 @@ CREATE TABLE `vista_ventas` (
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `vista_pedidos`
+--
+DROP TABLE IF EXISTS `vista_pedidos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_pedidos`  AS  select `p`.`id` AS `pedido`,`p`.`fecha` AS `fecha`,`c`.`nombre` AS `cliente`,`prod`.`nombre` AS `producto`,`d`.`cantidad` AS `cantidad`,coalesce(`pr`.`precio`,0.00) AS `precio`,`d`.`cantidad` * coalesce(`pr`.`precio`,0.00) AS `total` from ((((`pedidos` `p` join `clientes` `c` on(`p`.`cliente_id` = `c`.`id`)) join `detalle_pedido` `d` on(`p`.`id` = `d`.`pedido_id`)) join `productos` `prod` on(`d`.`producto_id` = `prod`.`id`)) left join `precio` `pr` on(`d`.`producto_id` = `pr`.`producto_id` and `pr`.`fecha_inicio` = (select max(`p2`.`fecha_inicio`) from `precio` `p2` where `p2`.`producto_id` = `d`.`producto_id`))) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `vista_ventas`
 --
 DROP TABLE IF EXISTS `vista_ventas`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_ventas`  AS  select `p`.`id` AS `pedido`,`p`.`fecha` AS `fecha`,`c`.`nombre` AS `cliente`,`prod`.`nombre` AS `producto`,`d`.`cantidad` AS `cantidad`,`prod`.`precio` AS `precio`,`d`.`cantidad` * `prod`.`precio` AS `total` from (((`pedidos` `p` join `clientes` `c` on(`p`.`cliente_id` = `c`.`id`)) join `detalle_pedido` `d` on(`p`.`id` = `d`.`pedido_id`)) join `productos` `prod` on(`d`.`producto_id` = `prod`.`id`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_ventas`  AS  select `p`.`id` AS `pedido`,`p`.`fecha` AS `fecha`,`c`.`nombre` AS `cliente`,`prod`.`nombre` AS `producto`,`d`.`cantidad` AS `cantidad`,coalesce(`pr`.`precio`,`prod`.`precio`) AS `precio`,`d`.`cantidad` * coalesce(`pr`.`precio`,`prod`.`precio`) AS `total` from ((((`pedidos` `p` join `clientes` `c` on(`p`.`cliente_id` = `c`.`id`)) join `detalle_pedido` `d` on(`p`.`id` = `d`.`pedido_id`)) join `productos` `prod` on(`d`.`producto_id` = `prod`.`id`)) left join `precio` `pr` on(`d`.`producto_id` = `pr`.`producto_id` and `p`.`fecha` >= `pr`.`fecha_inicio` and (`p`.`fecha` <= `pr`.`fecha_fin` or `pr`.`fecha_fin` is null))) ;
 
 --
 -- Índices para tablas volcadas
@@ -677,19 +716,19 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `detalle_pedido`
 --
 ALTER TABLE `detalle_pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=315;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=319;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
