@@ -15,8 +15,9 @@
   <nav>
     <a href="graf_analiticas_ventas.php">➕Gráficos de productos-clientes </a>
     <a href="histograma_productos.php">📊 Histograma de productos</a>
-    <a href="mostrar_ventas.php">✏️ Editar venta</a>
-    <a href="mostrar_ventas.php">🗑️ Eliminar venta</a>
+    <a href="filtro_ventas_por_cliente.php">✏️ ventas por cliente en Cantidad</a>
+    <a href="grafico_tendencia_ventas.php">🗑️ gráfico estadístico de tendencia de ventas</a>
+     <a href="distribución_porcentual_venta_producto.php">🗑️ distribución porcentual de ventas por producto </a>
     
   </nav>
   
